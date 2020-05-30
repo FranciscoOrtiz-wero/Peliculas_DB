@@ -258,6 +258,16 @@ class Model:
             return record
         except connector.Error as err:
             return err
+
+    def read_asientos_sala(self, id_sala): 
+        try:
+            sql =  'SELECT asiento.id_asiento, sala.id_sala, asiento.a_numero, asiento.a_fila, asiento.a_disponible FROM Sala JOIN asiento On sala.id_sala = %s'
+            vals = (id_sala,)
+            self.cursor.execute(sql,vals)
+            record = self.cursor.fetchall()
+            return record
+        except connector.Error as err:
+            return err
             
     def update_asiento(self, fields, vals):
         try:
@@ -350,6 +360,15 @@ class Model:
             sql =  'SELECT pelicula.p_nombre, funcion.f_fecha, funcion.f_hora FROM funcion JOIN pelicula ON pelicula.id_pelicula = funcion.id_pelicula and pelicula.p_nombre = %s'
             vals = (pelicula,)
             self.cursor.execute(sql, vals)
+            record = self.cursor.fetchall()
+            return record
+        except connector.Error as err:
+            return err
+
+    def read_funcion_datos(self): 
+        try:
+            sql =  'SELECT funcion.id_funcion, pelicula.id_pelicula, pelicula.p_nombre, sala.id_sala, sala.s_num_sala, funcion.f_fecha, funcion.f_hora FROM funcion JOIN pelicula ON pelicula.id_pelicula = funcion.id_pelicula JOIN sala ON funcion.id_sala = sala.id_sala'
+            self.cursor.execute(sql,)
             record = self.cursor.fetchall()
             return record
         except connector.Error as err:
@@ -595,11 +614,12 @@ class Model:
 
     def create_boleto(self, id_user, id_funcion, id_sala, id_asiento, costo):
         try:
-            sql = 'insert into boleto (`id_user`,`id_funcion`,`id_sala`,`id_asiento`,`b_costo`) values (%s, %s, %s, %s, %s);'
+            sql = 'insert into boleto (`id_user`,`id_funcion`,`id_sala`,`id_asiento`,`b_costo`) values (%s, %s, %s, %s, %s)'
+            # print(sql)
             vals = ( id_user, id_funcion, id_sala, id_asiento, costo)
             self.cursor.execute(sql, vals)
             self.cnx.commit()
-            return id_user
+            return True
         except connector.Error as err:
             self.cnx.rollback()
             return err
@@ -607,12 +627,21 @@ class Model:
     def read_a_boleto(self, id_boleto):
         try:
             sql =  'SELECT * FROM boleto WHERE id_boleto = %s'
-            vals = (id_boleto)
+            vals = (id_boleto,)
             self.cursor.execute(sql, vals)
             record = self.cursor.fetchone()
             return record
         except connector.Error as err:
             return err  
+
+    def read_funciones_datos(self):
+        try:
+            sql =  'SELECT funcion.id_funcion, pelicula.id_pelicula, pelicula.p_nombre, sala.id_sala, sala.s_num_sala, funcion.f_fecha, funcion.f_hora FROM funcion JOIN pelicula ON pelicula.id_pelicula = funcion.id_pelicula JOIN sala ON funcion.id_sala = sala.id_sala'
+            self.cursor.execute(sql)
+            record = self.cursor.fetchall()
+            return record
+        except connector.Error as err:
+            return err
  
 
     def update_boleto(self, fields, vals):

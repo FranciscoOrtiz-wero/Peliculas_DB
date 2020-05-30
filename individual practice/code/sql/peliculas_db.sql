@@ -45,7 +45,7 @@ create table if not exists asiento(
     id_sala int,
     a_numero int not null,
     a_fila varchar(4) not null,
-    a_dispoible int not null,
+    a_disponible int not null,
     
     PRIMARY KEY (id_asiento),
     

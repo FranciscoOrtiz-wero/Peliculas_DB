@@ -42,7 +42,8 @@ class View:
         print('5. Funciones')
         print('6. Gestionar Administradores')
         print('7. Gestionar Usuarios')
-        print('8. Salir')
+        print('8. Boletos')
+        print('9. Salir')
 
     def option(self, last):
         print('Selecciona una opcion (1-'+last+'): ', end = '')
@@ -247,12 +248,21 @@ class View:
 
     def show_a_funcion_hora(self, record):
         print('Pelicula: ', record[0])
-        print('Hora: ', record[1])
+        print('Hora: ', record[2])
 
     def show_all_funcion_fecha_hora(self, record):
         print('Pelicula: ', record[0])
         print('Fecha: ', record[1])
         print('Fecha: ', record[2])
+
+    def show_a_funcion_datos(self, record):
+        print('ID Funcion: ', record[0])
+        print('ID Pelicula: ', record[1])
+        print('Pelicula: ', record[2])
+        print('ID Sala: ', record[3])
+        print('Sala: ', record[4])
+        print('Fecha: ', record[5])
+        print('Hora: ', record[6])
     
 
     def show_funcion_header(self, header):

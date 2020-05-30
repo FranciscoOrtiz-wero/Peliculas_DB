@@ -85,11 +85,11 @@ class Controller:
             elif o == '6':
                 self.gest_admin_menu()
             elif o == '7':
-                self.boleto_menu()
-            elif o == '8':
                 self.gest_user_menu()
+            elif o == '8':
+                self.boleto_menu()
             elif o == '9':
-                self.view.end()
+                return
             else:
                 self.view.not_valid_option()
         return
@@ -103,7 +103,7 @@ class Controller:
             self.view.option('3')
             o = input()
             if o == '1':
-                self.boleto_menu()
+                self.cartelera_menu()
             elif o == '2':
                 self.boleto_user()
             elif o == '3':
@@ -315,6 +315,21 @@ class Controller:
         asientos = self.model.read_all_asientos()
         if type(asientos) == list:
             self.view.show_asiento_header(' Todas los asientos')
+            for asiento in asientos:
+                self.view.show_a_asiento(asiento)
+                self.view.show_asiento_midder()
+            self.view.show_asiento_footer()
+        else:
+            self.view.error('PROBLEMA AL LEER LOS ASIENTOS. REVISA.')
+        return
+
+    def read_asientos_sala(self):
+        self.read_all_salas()
+        self.view.ask('ID sala: ')
+        id_sala = input()
+        asientos = self.model.read_asientos_sala(id_sala)
+        if type(asientos) == list:
+            self.view.show_asiento_header(' Todas los asientos por sala')
             for asiento in asientos:
                 self.view.show_a_asiento(asiento)
                 self.view.show_asiento_midder()
@@ -991,7 +1006,7 @@ class Controller:
         id_user = input()
         user = self.model.read_usuario(id_user)
         if type(user) == tuple:
-            self.view.show_pelicula_header(' Datos de los asiento '+id_user+' ')
+            self.view.show_pelicula_header(' Datos del usuario '+id_user+' ')
             self.view.show_a_usuario(user)
             self.view.show_usuario_midder()
             self.view.show_usuario_footer()
@@ -1174,20 +1189,39 @@ class Controller:
         self.read_all_usuarios()
         self.view.ask('ID user: ')
         id_user = input()
-        self.read_all_funciones()
+        self.read_funciones_datos()
         self.view.ask('ID funcion: ')
         id_funcion = input()
-        self.read_all_salas()
+        # self.read_all_salas()
         self.view.ask('ID sala: ')
         id_sala = input()
-        self.read_all_asientos()
+        # self.read_asientos_sala()
         self.view.ask('ID asiento: ')
         id_asiento = input()
-        costo = 60
+        self.view.ask('costo: ')
+        costo = input()
+        return [id_user, id_funcion, id_sala, id_asiento, costo]
+
+    def ask_boleto_usuario(self):
+        self.read_all_usuarios()
+        self.view.ask('ID user: ')
+        id_user = input()
+        self.read_funciones_datos()
+        self.view.ask('ID funcion: ')
+        id_funcion = input()
+        # self.read_all_salas()
+        self.view.ask('ID sala: ')
+        id_sala = input()
+        # self.read_asientos_sala()
+        self.view.ask('ID asiento: ')
+        id_asiento = input()
+        self.view.ask('costo: ')
+        costo = input()
         return [id_user, id_funcion, id_sala, id_asiento, costo]
 
     def create_boleto(self):
         id_user, id_funcion, id_sala, id_asiento, costo = self.ask_boleto()
+        # costo = 60
         out = self.model.create_boleto(id_user, id_funcion, id_sala, id_asiento, costo)
         if out == True:
             self.view.ok(id_user, 'agregó boleto')
@@ -1197,6 +1231,32 @@ class Controller:
             else:
                 print(out)
                 self.view.error('NO SE PUDO AGREGAR EL BOLETO. REVISA.')
+        return
+
+    def create_boleto_user(self):
+        id_user, id_funcion, id_sala, id_asiento, costo = self.ask_boleto_usuario()
+        # costo = 60
+        out = self.model.create_boleto(id_user, id_funcion, id_sala, id_asiento, costo)
+        if out == True:
+            self.view.ok(id_user, 'agregó boleto')
+        else:
+            if out.errno == 1062:
+                self.view.error('BOLETO REPETIDO')
+            else:
+                print(out)
+                self.view.error('NO SE PUDO AGREGAR EL BOLETO. REVISA.')
+        return
+    
+    def read_funciones_datos(self):
+        funciones = self.model.read_funciones_datos()
+        if type(funciones) == list:
+            self.view.show_funcion_header(' Todas las funciones')
+            for funcion in funciones:
+                self.view.show_a_funcion_datos(funcion)
+                self.view.show_funcion_midder()
+            self.view.show_funcion_footer()
+        else:
+            self.view.error('PROBLEMA AL LEER LA FUNCIÓN. REVISA.')
         return
 
     def read_a_boleto(self):
@@ -1406,7 +1466,7 @@ class Controller:
     def read_funcion_hora(self):
         self.view.ask('Hora (HH:MM): ')
         hour = input()
-        horas = self.model.read_funcion_hora(date)
+        horas = self.model.read_funcion_hora(hour)
         if type(horas) == list:
             self.view.show_funcion_header(' Funciones con la hora: '+hour+' ')
             for hora in horas:
@@ -1432,7 +1492,7 @@ class Controller:
         return
 
     def boleto_user(self):
-        self.create_boleto()
+        self.create_boleto_user()
         return
     
     
